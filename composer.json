@@ -1,0 +1,30 @@
+{
+    "name": "otcommerce/otapiphpclient",
+    "type": "project",
+    "description": "Otapi light api converter",
+    "keywords": ["otapi","converter"],
+    "homepage": "https://github.com/OTCommerce/OtapiPhpClient",
+    "license": "MIT",
+    "authors": [
+        {
+            "name": "Aleksei S. Mikhaltsov",
+            "email": "am@opentao.net"
+        }
+    ],
+    "version": "1.0.0",
+    "require": {
+        "php": ">=7.4",
+        "guzzlehttp/guzzle": "^7.0.1",
+        "nesbot/carbon": "^2",
+        "ext-json": "*"
+    },
+    "require-dev": {
+        "roave/security-advisories": "dev-latest",
+        "symfony/var-dumper": "^5.2"
+    },
+    "autoload": {
+        "psr-4": {
+            "OtapiClient\\": "src/"
+        }
+    }
+}
