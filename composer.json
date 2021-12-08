@@ -1,9 +1,9 @@
 {
     "name": "otcommerce/otapiphpclient",
     "type": "project",
-    "description": "Otapi light api converter",
-    "keywords": ["otapi","converter"],
-    "homepage": "https://github.com/OTCommerce/OtapiPhpClient",
+    "description": "Open Trade Commerce API for marketplaces",
+    "keywords": ["otapi","api","taobao","1688","aliexpress","ebay"],
+    "homepage": "https://github.com/OTCommerce/otapiphpclient",
     "license": "MIT",
     "authors": [
         {
@@ -11,16 +11,12 @@
             "email": "am@opentao.net"
         }
     ],
-    "version": "1.0.0",
+    "version": "1.0.1",
     "require": {
         "php": ">=7.4",
         "guzzlehttp/guzzle": "^7.0.1",
         "nesbot/carbon": "^2",
         "ext-json": "*"
-    },
-    "require-dev": {
-        "roave/security-advisories": "dev-latest",
-        "symfony/var-dumper": "^5.2"
     },
     "autoload": {
         "psr-4": {
