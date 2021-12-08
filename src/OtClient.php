@@ -17,7 +17,7 @@ class OtClient
 	public function __construct(string $key, string $secret, string $lang)
 	{
 		Otapi::setKey($key);
-		Otapi::setKey($secret);
+		Otapi::setSecret($secret);
 		$this->setLang($lang);
 	}
 
@@ -38,13 +38,74 @@ class OtClient
 	 */
 	public function getBriefCatalog(string $categoryId = NULL): ?string
 	{
-		$data = Otapi::request('GetBriefCatalog');
-		if ($data && $categoryId){
+		$data = OtApi::request('GetBriefCatalog');
+		if ($data && $categoryId) {
 			try {
-				$decode = json_decode($data, TRUE, 512, JSON_THROW_ON_ERROR);
+				$decoded = json_decode($data, TRUE, 512, JSON_THROW_ON_ERROR);
+				if (isset($decoded['Result']['Roots'])) {
+					$category                   = $this->getBriefCatalogId($decoded['Result']['Roots'], $categoryId);
+					$decoded['Result']['Roots'] = [0 => $category];
+					$data                       = json_encode($decoded);
+				}
 			} catch (JsonException $e) {
 				throw new OtException('answer decoded error');
 			}
+		}
+		return $data;
+	}
+
+	/**
+	 * @param array  $childs
+	 * @param string $categoryId
+	 * @return array|string|null
+	 * @throws OtException
+	 */
+	private function getBriefCatalogId(array $childs, string $categoryId): ?array
+	{
+		foreach ($childs as $child) {
+			if ($child['Id'] === $categoryId) {
+				return $child;
+			}
+			if (isset($child['Children'])) {
+				$findId = $this->getBriefCatalogId($child['Children'], $categoryId);
+				if ($findId !== NULL) {
+					return $findId;
+				}
+			}
+		}
+		return NULL;
+	}
+
+	/**
+	 * @param array $parameters
+	 * @param array $xmlParameters
+	 * @return string|null
+	 * @throws OtException
+	 */
+	public function runBulkSearchItems(array $parameters, array $xmlParameters): ?string
+	{
+		$data = Otapi::request('RunBulkSearchItems', $parameters, $xmlParameters);
+		if ($data) {
+			try {
+				$decoded = json_decode($data, TRUE, 512, JSON_THROW_ON_ERROR);
+				if (isset($decoded['ErrorCode']) && $decoded['ErrorCode'] === 'Ok') {
+					$decoded['Result']['activityId'] = $decoded['Result']['Id']['Value'];
+					$data                            = json_encode($decoded);
+				}
+			} catch (JsonException $e) {
+				throw new OtException('answer decoded error');
+			}
+		}
+		return $data;
+	}
+
+	public function getBulkSearchItemsResult(string $activityId): ?string
+	{
+		$params = ['activityId' => $activityId, 'getResult' => FALSE];
+		$data   = Otapi::request('GetBulkSearchItemsResult', $params);
+		if ($data !== NULL && str_contains($data, 'Result":{"IsFinished":true')) {
+			$params = ['activityId' => $activityId, 'getResult' => TRUE];
+			$data   = Otapi::request('GetBulkSearchItemsResult', $params);
 		}
 		return $data;
 	}

@@ -8,7 +8,7 @@ use GuzzleHttp\Exception\GuzzleException;
 use JsonException;
 
 /*** */
-class Otapi
+class OtApi
 {
 	/*** */
 	private const OTAPI_URL = 'https://otapi.net/service-json/';
@@ -24,21 +24,19 @@ class Otapi
 	/**
 	 * @param string $method
 	 * @param array  $params
-	 * @param bool   $decode
 	 * @return array|string|null
 	 * @throws OtException
 	 */
-	public static function request(string $method, array $params = [], bool $decode = FALSE)
+	public static function request(string $method, array $params = [], ?array $xmlParams = NULL)
 	{
-		$requestUrl = self::prepareRequest($method, $params);
+		$requestUrl = self::prepareRequest($method, $params, $xmlParams);
 		try {
 			$response = self::$client->get($requestUrl);
 		} catch (GuzzleException $e) {
 			throw new OtException($e->getMessage());
 		}
 		try {
-			$data = (string) $response->getBody();
-			return $decode ? $data : json_decode($data, TRUE, 512, JSON_THROW_ON_ERROR);
+			return (string) $response->getBody();
 		} catch (JsonException $e) {
 			return NULL;
 		}
@@ -49,9 +47,12 @@ class Otapi
 	 * @param array  $params
 	 * @return array|null
 	 */
-	private static function prepareRequest(string $method, array $params = []): string
+	private static function prepareRequest(string $method, array $params = [], ?array $xmlParams = NULL): string
 	{
 		self::createClient();
+		if ($xmlParams !== NULL) {
+			$params['xmlParameters'] = self::createXmlParameters($xmlParams);
+		}
 		$params['instanceKey'] = self::getKey();
 		$params['language']    = self::getLang();
 		foreach ($params as $k => $v) {
@@ -178,6 +179,5 @@ class Otapi
 		}
 		self::$lang = $lang;
 	}
-
 
 }
