@@ -2,6 +2,8 @@
 
 namespace OtapiClient;
 
+use JsonException;
+
 /*** */
 class OtClient
 {
@@ -30,12 +32,21 @@ class OtClient
 	}
 
 	/**
+	 * @param string|null $categoryId
 	 * @return string|null
 	 * @throws OtException
 	 */
-	public function getBriefCatalog(): ?string
+	public function getBriefCatalog(string $categoryId = NULL): ?string
 	{
-		return Otapi::request('GetBriefCatalog');
+		$data = Otapi::request('GetBriefCatalog');
+		if ($data && $categoryId){
+			try {
+				$decode = json_decode($data, TRUE, 512, JSON_THROW_ON_ERROR);
+			} catch (JsonException $e) {
+				throw new OtException('answer decoded error');
+			}
+		}
+		return $data;
 	}
 
 }
