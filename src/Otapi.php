@@ -24,10 +24,10 @@ class OtApi
 	/**
 	 * @param string $method
 	 * @param array  $params
-	 * @return array|string|null
+	 * @return string|null
 	 * @throws OtException
 	 */
-	public static function request(string $method, array $params = [], ?array $xmlParams = NULL)
+	public static function request(string $method, array $params = [], ?array $xmlParams = NULL): ?string
 	{
 		$requestUrl = self::prepareRequest($method, $params, $xmlParams);
 		try {

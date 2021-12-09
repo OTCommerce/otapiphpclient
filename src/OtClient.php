@@ -171,4 +171,14 @@ class OtClient
 		return $data;
 	}
 
+	/**
+	 * @param string $itemId
+	 * @return string|null
+	 * @throws OtException
+	 */
+	public function getItemFullInfo(string $itemId): ?string
+	{
+		return Otapi::request('GetItemFullInfo', ['itemId' => $itemId]);
+	}
+
 }
