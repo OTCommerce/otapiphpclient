@@ -2,11 +2,16 @@
 
 namespace OtapiClient;
 
+use JsonMachine\JsonMachine;
 use JsonException;
 
 /*** */
 class OtClient
 {
+	/*** @var bool */
+	private bool $returnWihoutCheck = FALSE;
+	/*** @var bool */
+	private bool $returnItems = FALSE;
 
 	/**
 	 * @param string $key
@@ -99,13 +104,69 @@ class OtClient
 		return $data;
 	}
 
+	/**
+	 * @param array $parameters
+	 * @param array $xmlParameters
+	 * @return string|null
+	 * @throws OtException
+	 */
+	public function getBulkSearch(array $parameters, array $xmlParameters): ?string
+	{
+		$data = $this->runBulkSearchItems($parameters, $xmlParameters);
+		if ($data) {
+			try {
+				$decoded = json_decode($data, TRUE, 512, JSON_THROW_ON_ERROR);
+				if (isset($decoded['ErrorCode']) && $decoded['ErrorCode'] === 'Ok') {
+					$activityId = $decoded['Result']['Id']['Value'];
+					$bulkDone   = FALSE;
+					while ($bulkDone === FALSE) {
+						if ($this->returnItems === TRUE) {
+							return $this->getBulkSearchItemsResult($activityId);
+						}
+						$resultData = $this->getBulkSearchItemsResult($activityId);
+						if ($resultData === NULL) {
+							throw new OtException('bulk serach failed');
+						}
+						if ( ! str_contains($resultData, 'Result":{"IsFinished":false')) {
+							return $resultData;
+						}
+					}
+				}
+			} catch (JsonException $e) {
+				throw new OtException('answer decoded error');
+			}
+		}
+		return NULL;
+	}
+
+	/**
+	 * @param array $parameters
+	 * @param array $xmlParameters
+	 * @return JsonMachine
+	 * @throws OtException
+	 */
+	public function getBulkSearchDecoded(array $parameters, array $xmlParameters): JsonMachine
+	{
+		$this->returnWihoutCheck = TRUE;
+		$this->returnItems       = FALSE;
+		$items                   = JsonMachine::fromString($this->getBulkSearch($parameters, $xmlParameters), '/Result/Items');;
+		$this->returnWihoutCheck = FALSE;
+		return $items;
+	}
+
+	/**
+	 * @param string $activityId
+	 * @return string|null
+	 * @throws OtException
+	 */
 	public function getBulkSearchItemsResult(string $activityId): ?string
 	{
 		$params = ['activityId' => $activityId, 'getResult' => FALSE];
 		$data   = Otapi::request('GetBulkSearchItemsResult', $params);
 		if ($data !== NULL && str_contains($data, 'Result":{"IsFinished":true')) {
-			$params = ['activityId' => $activityId, 'getResult' => TRUE];
-			$data   = Otapi::request('GetBulkSearchItemsResult', $params);
+			$params            = ['activityId' => $activityId, 'getResult' => TRUE];
+			$this->returnItems = TRUE;
+			return Otapi::request('GetBulkSearchItemsResult', $params);
 		}
 		return $data;
 	}
