@@ -181,4 +181,91 @@ class OtClient
 		return Otapi::request('GetItemFullInfo', ['itemId' => $itemId]);
 	}
 
+	/**
+	 * @param array $itemIds
+	 * @return string|null
+	 * @throws OtException
+	 */
+	public function runBulkItems(array $itemIds): ?string
+	{
+		$data = Otapi::request('RunBulkItems', ['ids' => implode(';', $itemIds)]);
+		if ($data) {
+			try {
+				$decoded = json_decode($data, TRUE, 512, JSON_THROW_ON_ERROR);
+				if (isset($decoded['ErrorCode']) && $decoded['ErrorCode'] === 'Ok') {
+					$decoded['Result']['activityId'] = $decoded['Result']['Id']['Value'];
+					$data                            = json_encode($decoded);
+				}
+			} catch (JsonException $e) {
+				throw new OtException('answer decoded error');
+			}
+		}
+		return $data;
+	}
+
+	/**
+	 * @param string $activityId
+	 * @return string|null
+	 * @throws OtException
+	 */
+	public function getBulkItemsResult(string $activityId): ?string
+	{
+		$params = ['activityId' => $activityId, 'getResult' => FALSE];
+		$data   = Otapi::request('GetBulkItemsResult', $params);
+		if ($data !== NULL && str_contains($data, 'Result":{"IsFinished":true')) {
+			$params            = ['activityId' => $activityId, 'getResult' => TRUE];
+			$this->returnItems = TRUE;
+			return Otapi::request('GetBulkItemsResult', $params);
+		}
+		return $data;
+	}
+
+	/**
+	 * @param array $itemIds
+	 * @return string|null
+	 * @throws OtException
+	 */
+	public function getBulkItemsAtOnce(array $itemIds): ?string
+	{
+		$data = $this->runBulkItems($itemIds);
+		if ($data) {
+			try {
+				$decoded = json_decode($data, TRUE, 512, JSON_THROW_ON_ERROR);
+				if (isset($decoded['ErrorCode']) && $decoded['ErrorCode'] === 'Ok') {
+					$activityId = $decoded['Result']['Id']['Value'];
+					$bulkDone   = FALSE;
+					while ($bulkDone === FALSE) {
+						if ($this->returnItems === TRUE) {
+							return $this->getBulkItemsResult($activityId);
+						}
+						$resultData = $this->getBulkItemsResult($activityId);
+						if ($resultData === NULL) {
+							throw new OtException('bulk items failed');
+						}
+						if ( ! str_contains($resultData, 'Result":{"IsFinished":false')) {
+							return $resultData;
+						}
+					}
+				}
+			} catch (JsonException $e) {
+				throw new OtException('answer decoded error');
+			}
+		}
+		return NULL;
+	}
+
+	/**
+	 * @param array $itemIds
+	 * @return JsonMachine
+	 * @throws OtException
+	 */
+	public function getBulkItemsDecoded(array $itemIds): JsonMachine
+	{
+		$this->returnWihoutCheck = TRUE;
+		$this->returnItems       = FALSE;
+		$items                   = JsonMachine::fromString($this->getBulkItemsAtOnce($itemIds), '/Result/Items');;
+		$this->returnWihoutCheck = FALSE;
+		return $items;
+	}
+
 }

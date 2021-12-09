@@ -59,8 +59,8 @@ May take a long time (30 or more seconds).
 $client->getBulkSearchDecoded($parameters, $xmlParameters->getData());
 ````
 This method is similar to getBulkSearch.
-As answer you will get JsonMachine object.
-Than you can use it in loop to parse all items.
+As answer, you will get JsonMachine object.
+Then you can use it in loop to parse all items.
 
 ````
 $items  = $client->getBulkSearchDecoded($parameters, $xmlParameters->getData());
@@ -76,3 +76,36 @@ $client->getItemFullInfo('627419924025');
 627419924025 is itemId parameter.
 
 return full item data for specified ItemId.
+
+## runBulkItems
+Start bulk request for specified item Ids
+````
+$client->runBulkItems(['123','125','854']);
+````
+Array of ItemIds as method parameter
+
+Return activityId for getBulkItemsResult method
+
+## getBulkItemsResult
+````
+$client->getBulkItemsResult($activityId);
+````
+$activityId form runBulkSearchItems request
+
+return json string with all data
+If Result IsFinished = FALSE repeat request. Answer is not ready.
+
+## getBulkItemsAtOnce
+````
+$client->getBulkItemsAtOnce(['123','125','854']);
+````
+This method start bulk items (runBulkItems) and wait for answer.
+May take a long time (30 or more seconds).
+
+## getBulkItemsDecoded
+````
+$client->getBulkItemsDecoded(['123','125','854']);
+````
+This method is similar to getBulkItemsAtOnce.
+As answer, you will get JsonMachine object.
+Then you can use it in loop to parse all items.
