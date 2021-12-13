@@ -1,111 +1,12 @@
 # OtapiPhpClient
 
-## Create Client
-````
-$client = new OtClient($key, $secret, $lang);
-````
- - key (Access Key)
- - secret (Secret for access key)
- - language (2 symbol lang identifier)
+PHP library to work with otapi.
+http://docs.otapi.net/ru
 
-## getBriefCatalog
-Get full OTAPI catalog for supported providers
-````
-$client->getBriefCatalog('otc-46');
-````
- - 'otc-46' is optional parameter if you what to get only specified tree.
- 
-## runBulkSearchItems
-Start bulk search
-````
-$client->getBulkSearchDecoded($parameters, $xmlParameters->getData());
-````
 
-**$parameters**
- - framePosition (offset for search, default 0)
- - frameSize (items amount for search, default 1000, max value 10000)
+[OtClient](https://github.com/OTCommerce/otapiphpclient/wiki/OtClient) for search and item details.
 
-**$xmlParameters**
+[OtClientBulk](https://github.com/OTCommerce/otapiphpclient/wiki/OtClientBulk) for bulk oprations
 
-Filter for search  
-````
-$xmlParameters = new OtXmlParameters();
-$xmlParameters->setCategoryId('otc-46');
-````
-Otapi category Id for search
-$xmlParameters->setMinVolume(30);
-Min amount of sales
+[Examples](https://github.com/OTCommerce/otapiphpclient/tree/master/examples) are in example folder.
 
-Method return answer with activityId for getting result
-
-## getBulkSearchItemsResult
-````
-$client->getBulkSearchItemsResult($activityId);
-````
-$activityId form runBulkSearchItems request
-
-return json string with all data
-If Result IsFinished = FALSE repeat request. Answer is not ready.
-
-## getBulkSearch
-````
-$client->getBulkSearch($parameters, $xmlParameters->getData());
-````
-This method start bulk search and wait for answer.
-May take a long time (30 or more seconds).
-
-## getBulkSearchDecoded
-````
-$client->getBulkSearchDecoded($parameters, $xmlParameters->getData());
-````
-This method is similar to getBulkSearch.
-As answer, you will get JsonMachine object.
-Then you can use it in loop to parse all items.
-
-````
-$items  = $client->getBulkSearchDecoded($parameters, $xmlParameters->getData());
-foreach ($items as $item){
-    echo $item['Id'];
-}
-````
-
-## getItemFullInfo
-````
-$client->getItemFullInfo('627419924025');
-````
-627419924025 is itemId parameter.
-
-return full item data for specified ItemId.
-
-## runBulkItems
-Start bulk request for specified item Ids
-````
-$client->runBulkItems(['123','125','854']);
-````
-Array of ItemIds as method parameter
-
-Return activityId for getBulkItemsResult method
-
-## getBulkItemsResult
-````
-$client->getBulkItemsResult($activityId);
-````
-$activityId form runBulkSearchItems request
-
-return json string with all data
-If Result IsFinished = FALSE repeat request. Answer is not ready.
-
-## getBulkItemsAtOnce
-````
-$client->getBulkItemsAtOnce(['123','125','854']);
-````
-This method start bulk items (runBulkItems) and wait for answer.
-May take a long time (30 or more seconds).
-
-## getBulkItemsDecoded
-````
-$client->getBulkItemsDecoded(['123','125','854']);
-````
-This method is similar to getBulkItemsAtOnce.
-As answer, you will get JsonMachine object.
-Then you can use it in loop to parse all items.

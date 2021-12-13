@@ -2,16 +2,15 @@
 
 namespace OtapiClient;
 
-use JsonMachine\JsonMachine;
-use JsonException;
+use OtapiClient\ValuesObject\OtParameters;
+use OtapiClient\ValuesObject\OtXmlParameters;
 
-/*** */
+/**
+ * Class OtClient
+ * @package OtapiClient
+ */
 class OtClient
 {
-	/*** @var bool */
-	private bool $returnWihoutCheck = FALSE;
-	/*** @var bool */
-	private bool $returnItems = FALSE;
 
 	/**
 	 * @param string $key
@@ -37,235 +36,26 @@ class OtClient
 	}
 
 	/**
-	 * @param string|null $categoryId
-	 * @return string|null
-	 * @throws OtException
-	 */
-	public function getBriefCatalog(string $categoryId = NULL): ?string
-	{
-		$data = OtApi::request('GetBriefCatalog');
-		if ($data && $categoryId) {
-			try {
-				$decoded = json_decode($data, TRUE, 512, JSON_THROW_ON_ERROR);
-				if (isset($decoded['Result']['Roots'])) {
-					$category                   = $this->getBriefCatalogId($decoded['Result']['Roots'], $categoryId);
-					$decoded['Result']['Roots'] = [0 => $category];
-					$data                       = json_encode($decoded);
-				}
-			} catch (JsonException $e) {
-				throw new OtException('answer decoded error');
-			}
-		}
-		return $data;
-	}
-
-	/**
-	 * @param array  $childs
-	 * @param string $categoryId
-	 * @return array|string|null
-	 * @throws OtException
-	 */
-	private function getBriefCatalogId(array $childs, string $categoryId): ?array
-	{
-		foreach ($childs as $child) {
-			if ($child['Id'] === $categoryId) {
-				return $child;
-			}
-			if (isset($child['Children'])) {
-				$findId = $this->getBriefCatalogId($child['Children'], $categoryId);
-				if ($findId !== NULL) {
-					return $findId;
-				}
-			}
-		}
-		return NULL;
-	}
-
-	/**
-	 * @param array $parameters
-	 * @param array $xmlParameters
-	 * @return string|null
-	 * @throws OtException
-	 */
-	public function runBulkSearchItems(array $parameters, array $xmlParameters): ?string
-	{
-		$data = Otapi::request('RunBulkSearchItems', $parameters, $xmlParameters);
-		if ($data) {
-			try {
-				$decoded = json_decode($data, TRUE, 512, JSON_THROW_ON_ERROR);
-				if (isset($decoded['ErrorCode']) && $decoded['ErrorCode'] === 'Ok') {
-					$decoded['Result']['activityId'] = $decoded['Result']['Id']['Value'];
-					$data                            = json_encode($decoded);
-				}
-			} catch (JsonException $e) {
-				throw new OtException('answer decoded error');
-			}
-		}
-		return $data;
-	}
-
-	/**
-	 * @param array $parameters
-	 * @param array $xmlParameters
-	 * @return string|null
-	 * @throws OtException
-	 */
-	public function getBulkSearch(array $parameters, array $xmlParameters): ?string
-	{
-		$data = $this->runBulkSearchItems($parameters, $xmlParameters);
-		if ($data) {
-			try {
-				$decoded = json_decode($data, TRUE, 512, JSON_THROW_ON_ERROR);
-				if (isset($decoded['ErrorCode']) && $decoded['ErrorCode'] === 'Ok') {
-					$activityId = $decoded['Result']['Id']['Value'];
-					$bulkDone   = FALSE;
-					while ($bulkDone === FALSE) {
-						if ($this->returnItems === TRUE) {
-							return $this->getBulkSearchItemsResult($activityId);
-						}
-						$resultData = $this->getBulkSearchItemsResult($activityId);
-						if ($resultData === NULL) {
-							throw new OtException('bulk serach failed');
-						}
-						if ( ! str_contains($resultData, 'Result":{"IsFinished":false')) {
-							return $resultData;
-						}
-					}
-				}
-			} catch (JsonException $e) {
-				throw new OtException('answer decoded error');
-			}
-		}
-		return NULL;
-	}
-
-	/**
-	 * @param array $parameters
-	 * @param array $xmlParameters
-	 * @return JsonMachine
-	 * @throws OtException
-	 */
-	public function getBulkSearchDecoded(array $parameters, array $xmlParameters): JsonMachine
-	{
-		$this->returnWihoutCheck = TRUE;
-		$this->returnItems       = FALSE;
-		$items                   = JsonMachine::fromString($this->getBulkSearch($parameters, $xmlParameters), '/Result/Items');;
-		$this->returnWihoutCheck = FALSE;
-		return $items;
-	}
-
-	/**
-	 * @param string $activityId
-	 * @return string|null
-	 * @throws OtException
-	 */
-	public function getBulkSearchItemsResult(string $activityId): ?string
-	{
-		$params = ['activityId' => $activityId, 'getResult' => FALSE];
-		$data   = Otapi::request('GetBulkSearchItemsResult', $params);
-		if ($data !== NULL && str_contains($data, 'Result":{"IsFinished":true')) {
-			$params            = ['activityId' => $activityId, 'getResult' => TRUE];
-			$this->returnItems = TRUE;
-			return Otapi::request('GetBulkSearchItemsResult', $params);
-		}
-		return $data;
-	}
-
-	/**
 	 * @param string $itemId
 	 * @return string|null
 	 * @throws OtException
 	 */
 	public function getItemFullInfo(string $itemId): ?string
 	{
-		return Otapi::request('GetItemFullInfo', ['itemId' => $itemId]);
+		$params = new OtParameters();
+		$params->setItemId($itemId);
+		return Otapi::request('GetItemFullInfo', $params);
 	}
 
 	/**
-	 * @param array $itemIds
+	 * @param OtParameters    $parameters
+	 * @param OtXmlParameters $xmlParameters
 	 * @return string|null
 	 * @throws OtException
 	 */
-	public function runBulkItems(array $itemIds): ?string
+	public function batchSearchItemsFrame(OtParameters $parameters, OtXmlParameters $xmlParameters): ?string
 	{
-		$data = Otapi::request('RunBulkItems', ['ids' => implode(';', $itemIds)]);
-		if ($data) {
-			try {
-				$decoded = json_decode($data, TRUE, 512, JSON_THROW_ON_ERROR);
-				if (isset($decoded['ErrorCode']) && $decoded['ErrorCode'] === 'Ok') {
-					$decoded['Result']['activityId'] = $decoded['Result']['Id']['Value'];
-					$data                            = json_encode($decoded);
-				}
-			} catch (JsonException $e) {
-				throw new OtException('answer decoded error');
-			}
-		}
-		return $data;
-	}
-
-	/**
-	 * @param string $activityId
-	 * @return string|null
-	 * @throws OtException
-	 */
-	public function getBulkItemsResult(string $activityId): ?string
-	{
-		$params = ['activityId' => $activityId, 'getResult' => FALSE];
-		$data   = Otapi::request('GetBulkItemsResult', $params);
-		if ($data !== NULL && str_contains($data, 'Result":{"IsFinished":true')) {
-			$params            = ['activityId' => $activityId, 'getResult' => TRUE];
-			$this->returnItems = TRUE;
-			return Otapi::request('GetBulkItemsResult', $params);
-		}
-		return $data;
-	}
-
-	/**
-	 * @param array $itemIds
-	 * @return string|null
-	 * @throws OtException
-	 */
-	public function getBulkItemsAtOnce(array $itemIds): ?string
-	{
-		$data = $this->runBulkItems($itemIds);
-		if ($data) {
-			try {
-				$decoded = json_decode($data, TRUE, 512, JSON_THROW_ON_ERROR);
-				if (isset($decoded['ErrorCode']) && $decoded['ErrorCode'] === 'Ok') {
-					$activityId = $decoded['Result']['Id']['Value'];
-					$bulkDone   = FALSE;
-					while ($bulkDone === FALSE) {
-						if ($this->returnItems === TRUE) {
-							return $this->getBulkItemsResult($activityId);
-						}
-						$resultData = $this->getBulkItemsResult($activityId);
-						if ($resultData === NULL) {
-							throw new OtException('bulk items failed');
-						}
-						if ( ! str_contains($resultData, 'Result":{"IsFinished":false')) {
-							return $resultData;
-						}
-					}
-				}
-			} catch (JsonException $e) {
-				throw new OtException('answer decoded error');
-			}
-		}
-		return NULL;
-	}
-
-	/**
-	 * @param array $itemIds
-	 * @return JsonMachine
-	 * @throws OtException
-	 */
-	public function getBulkItemsDecoded(array $itemIds): JsonMachine
-	{
-		$this->returnWihoutCheck = TRUE;
-		$this->returnItems       = FALSE;
-		$items                   = JsonMachine::fromString($this->getBulkItemsAtOnce($itemIds), '/Result/Items');;
-		$this->returnWihoutCheck = FALSE;
-		return $items;
+		return Otapi::request('BatchSearchItemsFrame', $parameters, $xmlParameters);
 	}
 
 }

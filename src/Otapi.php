@@ -5,9 +5,15 @@ namespace OtapiClient;
 use Carbon\Carbon;
 use GuzzleHttp\Client;
 use GuzzleHttp\Exception\GuzzleException;
+use GuzzleHttp\Psr7\StreamWrapper;
 use JsonException;
+use OtapiClient\ValuesObject\OtParameters;
+use OtapiClient\ValuesObject\OtXmlParameters;
 
-/*** */
+/**
+ * Class OtApi
+ * @package OtapiClient
+ */
 class OtApi
 {
 	/*** */
@@ -22,12 +28,14 @@ class OtApi
 	private static ?Client $client = NULL;
 
 	/**
-	 * @param string $method
-	 * @param array  $params
-	 * @return string|null
+	 * @param string               $method
+	 * @param OtParameters|null    $params
+	 * @param OtXmlParameters|null $xmlParams
+	 * @param bool                 $returnAsStream
+	 * @return resource|string
 	 * @throws OtException
 	 */
-	public static function request(string $method, array $params = [], ?array $xmlParams = NULL): ?string
+	public static function request(string $method, OtParameters $params = NULL, ?OtXmlParameters $xmlParams = NULL, bool $returnAsStream = FALSE)
 	{
 		$requestUrl = self::prepareRequest($method, $params, $xmlParams);
 		try {
@@ -35,23 +43,34 @@ class OtApi
 		} catch (GuzzleException $e) {
 			throw new OtException($e->getMessage());
 		}
-		try {
-			return (string) $response->getBody();
-		} catch (JsonException $e) {
-			return NULL;
+		if ($returnAsStream) {
+			return StreamWrapper::getResource($response->getBody());
 		}
+		$answer = (string) $response->getBody();
+		// to not decode to prevent memory overuse
+		if ( ! str_starts_with($answer, '{"ErrorCode":"Ok"') && str_starts_with($answer, '{"ErrorCode":')) {
+			try {
+				$decoded = json_decode($answer, TRUE, 512, JSON_THROW_ON_ERROR);
+			} catch (JsonException $e) {
+				throw new OtException('request decode error');
+			}
+			throw new OtException($decoded['ErrorCode'] . ': ' . $decoded['ErrorDescription']);
+		}
+		return $answer;
 	}
 
 	/**
-	 * @param string $method
-	 * @param array  $params
+	 * @param string               $method
+	 * @param OtParameters|null    $parameters
+	 * @param OtXmlParameters|null $xmlParams
 	 * @return array|null
 	 */
-	private static function prepareRequest(string $method, array $params = [], ?array $xmlParams = NULL): string
+	private static function prepareRequest(string $method, ?OtParameters $parameters = NULL, ?OtXmlParameters $xmlParams = NULL): string
 	{
+		$params = $parameters ? $parameters->getData() : [];
 		self::createClient();
 		if ($xmlParams !== NULL) {
-			$params['xmlParameters'] = self::createXmlParameters($xmlParams);
+			$params['xmlParameters'] = $xmlParams->createXmlParameters();
 		}
 		$params['instanceKey'] = self::getKey();
 		$params['language']    = self::getLang();
@@ -78,37 +97,6 @@ class OtApi
 		return hash('sha256', $paramString);
 	}
 
-	/**
-	 * @param array $parameters
-	 * @return string
-	 */
-	public static function createXmlParameters(array $parameters): string
-	{
-		$xmlData   = [];
-		$xmlData[] = '<SearchItemsParameters>';
-		if (isset($parameters['providerId'])) {
-			$xmlData[] = '<Provider>' . $parameters['providerId'] . '</Provider>';
-		}
-		$xmlData[] = '<CategoryId>' . $parameters['categoryId'] . '</CategoryId>';
-		if (isset($parameters['minPrice'])) {
-			$xmlData[] = '<MinPrice>' . $parameters['minPrice'] . '</MinPrice>';
-		}
-		if (isset($parameters['maxPrice'])) {
-			$xmlData[] = '<MaxPrice>' . $parameters['maxPrice'] . '</MaxPrice>';
-		}
-		if (isset($parameters['minVolume'])) {
-			$xmlData[] = '<MinVolume>' . $parameters['minVolume'] . '</MinVolume>';
-		}
-		if (isset($parameters['order'])) {
-			$xmlData[] = '<OrderBy>' . $parameters['order'] . '</OrderBy>';
-		} else {
-			$xmlData[] = '<OrderBy>Default</OrderBy>';
-		}
-		$xmlData[] = '<Features><Feature Name="IsComplete">true</Feature></Features>';
-		$xmlData[] = '</SearchItemsParameters>';
-		return implode('', $xmlData);
-	}
-
 	/*** */
 	private static function createClient(): void
 	{
@@ -120,9 +108,7 @@ class OtApi
 		}
 	}
 
-	/**
-	 * @return string
-	 */
+	/*** @return string */
 	private static function getKey(): string
 	{
 		return self::$key;
@@ -140,9 +126,7 @@ class OtApi
 		self::$key = $key;
 	}
 
-	/**
-	 * @return string
-	 */
+	/*** @return string */
 	private static function getSecret(): string
 	{
 		return self::$secret;
@@ -160,9 +144,7 @@ class OtApi
 		self::$secret = $secret;
 	}
 
-	/**
-	 * @return string
-	 */
+	/*** @return string */
 	private static function getLang(): string
 	{
 		return self::$lang;
