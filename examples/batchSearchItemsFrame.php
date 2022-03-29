@@ -1,12 +1,12 @@
 <?php
 
 use App\Conf;
-use OtapiClient\OtClient;
-use OtapiClient\ValuesObject\OtBlockList;
-use OtapiClient\ValuesObject\OtOrderType;
-use OtapiClient\ValuesObject\OtParameters;
-use OtapiClient\ValuesObject\OtProvider;
-use OtapiClient\ValuesObject\OtXmlParameters;
+use OtApiClient\OtClient;
+use OtApiClient\ValuesObject\OtBlockList;
+use OtApiClient\ValuesObject\OtOrderType;
+use OtApiClient\ValuesObject\OtParameters;
+use OtApiClient\ValuesObject\OtProvider;
+use OtApiClient\ValuesObject\OtXmlParameters;
 
 include_once __DIR__ . "/ini.php";
 try {

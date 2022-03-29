@@ -1,7 +1,7 @@
 <?php
 
 use App\Conf;
-use OtapiClient\OtClient;
+use OtApiClient\OtClient;
 
 include_once __DIR__ . "/ini.php";
 try {

@@ -1,20 +1,20 @@
 <?php
 
-namespace OtapiClient;
+namespace OtApiClient;
 
 use Carbon\Carbon;
 use GuzzleHttp\Client;
 use GuzzleHttp\Exception\GuzzleException;
 use GuzzleHttp\Psr7\StreamWrapper;
 use JsonException;
-use OtapiClient\ValuesObject\OtParameters;
-use OtapiClient\ValuesObject\OtXmlParameters;
+use OtApiClient\ValuesObject\OtParameters;
+use OtApiClient\ValuesObject\OtXmlParameters;
 
 /**
  * Class OtApi
- * @package OtapiClient
+ * @package OtApiClient
  */
-class OtApi
+class OtApiClient
 {
 	/*** */
 	private const OTAPI_URL = 'https://otapi.net/service-json/';

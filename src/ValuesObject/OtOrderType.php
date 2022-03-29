@@ -1,6 +1,6 @@
 <?php
 
-namespace OtapiClient\ValuesObject;
+namespace OtApiClient\ValuesObject;
 
 /**
  * Class OtOrderType

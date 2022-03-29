@@ -1,9 +1,9 @@
 <?php
 
 use App\Conf;
-use OtapiClient\OtClientBulk;
-use OtapiClient\OtException;
-use OtapiClient\ValuesObject\OtXmlParameters;
+use OtApiClient\OtClientBulk;
+use OtApiClient\OtException;
+use OtApiClient\ValuesObject\OtXmlParameters;
 
 include_once __DIR__ . "/ini.php";
 try {

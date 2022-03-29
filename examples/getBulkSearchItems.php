@@ -2,9 +2,9 @@
 
 use App\Conf;
 use JsonMachine\JsonMachine;
-use OtapiClient\OtClientBulk;
-use OtapiClient\ValuesObject\OtParameters;
-use OtapiClient\ValuesObject\OtXmlParameters;
+use OtApiClient\OtClientBulk;
+use OtApiClient\ValuesObject\OtParameters;
+use OtApiClient\ValuesObject\OtXmlParameters;
 
 include_once __DIR__ . "/ini.php";
 try {

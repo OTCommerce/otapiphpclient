@@ -1,9 +1,9 @@
 <?php
 
-namespace OtapiClient;
+namespace OtApiClient;
 
-use OtapiClient\ValuesObject\OtParameters;
-use OtapiClient\ValuesObject\OtXmlParameters;
+use OtApiClient\ValuesObject\OtParameters;
+use OtApiClient\ValuesObject\OtXmlParameters;
 
 /**
  * Class OtClient

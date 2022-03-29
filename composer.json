@@ -11,7 +11,7 @@
             "email": "am@opentao.net"
         }
     ],
-    "version": "1.1.0",
+    "version": "1.1.1",
     "require": {
         "php": ">=7.4",
         "guzzlehttp/guzzle": "^7.0.1",
@@ -21,7 +21,7 @@
     },
     "autoload": {
         "psr-4": {
-            "OtapiClient\\": "src/"
+            "OtApiClient\\": "src/"
         }
     }
 }

@@ -1,6 +1,6 @@
 <?php
 
-namespace OtapiClient;
+namespace OtApiClient;
 
 use Exception;
 

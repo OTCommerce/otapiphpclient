@@ -1,11 +1,11 @@
 <?php
 
-namespace OtapiClient;
+namespace OtApiClient;
 
 use JsonMachine\JsonMachine;
 use JsonException;
-use OtapiClient\ValuesObject\OtParameters;
-use OtapiClient\ValuesObject\OtXmlParameters;
+use OtApiClient\ValuesObject\OtParameters;
+use OtApiClient\ValuesObject\OtXmlParameters;
 
 /**
  * Class OtClientBulk
