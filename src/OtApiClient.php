@@ -27,7 +27,6 @@ class OtApiClient
 	/*** @var Client|null */
 	private static ?Client $client = NULL;
 
-
 	/**
 	 * @param string               $method
 	 * @param OtParameters|null    $params
