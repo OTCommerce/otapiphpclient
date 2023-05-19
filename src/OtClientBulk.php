@@ -11,7 +11,7 @@ use OtApiClient\ValuesObject\OtXmlParameters;
  * Class OtClientBulk
  * @package OtapiClient
  */
-class OtClientBulk extends OtClient
+class OtClientBulk extends OtApiClient
 {
 	/*** @var bool */
 	private bool $returnWihoutCheck = FALSE;
@@ -90,10 +90,10 @@ class OtClientBulk extends OtClient
 	 * @param OtParameters    $parameters
 	 * @param OtXmlParameters $xmlParameters
 	 * @param bool            $asStream
-	 * @return string|resource|null
+	 * @return string|NULL
 	 * @throws OtException
 	 */
-	public function getBulkSearch(OtParameters $parameters, OtXmlParameters $xmlParameters, bool $asStream = FALSE)
+	public function getBulkSearch(OtParameters $parameters, OtXmlParameters $xmlParameters, bool $asStream = FALSE): ?string
 	{
 		$data = $this->runBulkSearchItems($parameters, $xmlParameters);
 		if ($data) {

@@ -8,30 +8,34 @@ namespace OtApiClient\ValuesObject;
  */
 class OtXmlParameters
 {
-	/*** @var string|null */
+	/*** @var string|NULL */
 	private ?string $provider = NULL;
-	/*** @var string|null */
+	/*** @var string|NULL */
 	private ?string $categoryId = NULL;
-	/*** @var float|null */
+	/*** @var float|NULL */
 	private ?float $minPrice = NULL;
-	/*** @var float|null */
+	/*** @var float|NULL */
 	private ?float $maxPrice = NULL;
-	/*** @var int|null */
+	/*** @var int|NULL */
 	private ?int $minVolume = NULL;
-	/*** @var string|null */
+	/*** @var string|NULL */
 	private ?string $order = NULL;
 	/*** @var bool */
 	private bool $isComplete = TRUE;
-	/*** @var string|null */
+	/*** @var string|NULL */
 	private ?string $vendorName = NULL;
-	/*** @var string|null */
+	/*** @var string|NULL */
 	private ?string $vendorId = NULL;
-	/*** @var string|null */
+	/*** @var string|NULL */
+	private ?string $minVendorRating = NULL;
+	/*** @var string|NULL */
+	private ?string $maxVendorRating = NULL;
+	/*** @var string|NULL */
 	private ?string $itemTitle = NULL;
-	/*** @var string|null */
+	/*** @var string|NULL */
 	private ?string $brandId = NULL;
 
-	/*** @return string|null */
+	/*** @return string|NULL */
 	public function getProvider(): ?string
 	{
 		return $this->provider;
@@ -139,7 +143,31 @@ class OtXmlParameters
 		$this->vendorId = $vendorId;
 	}
 
-	/*** @return string|null */
+	/*** @return string|NULL */
+	public function getMinVendorRating(): ?string
+	{
+		return $this->minVendorRating;
+	}
+
+	/*** @param string|NULL $minVendorRating */
+	public function setMinVendorRating(?string $minVendorRating): void
+	{
+		$this->minVendorRating = $minVendorRating;
+	}
+
+	/*** @return string|NULL */
+	public function getMaxVendorRating(): ?string
+	{
+		return $this->maxVendorRating;
+	}
+
+	/*** @param string|NULL $maxVendorRating */
+	public function setMaxVendorRating(?string $maxVendorRating): void
+	{
+		$this->maxVendorRating = $maxVendorRating;
+	}
+
+	/*** @return string|NULL */
 	public function getItemTitle(): ?string
 	{
 		return $this->itemTitle;
@@ -151,7 +179,7 @@ class OtXmlParameters
 		$this->itemTitle = $itemTitle;
 	}
 
-	/*** @return string|null */
+	/*** @return string|NULL */
 	public function getBrandId(): ?string
 	{
 		return $this->brandId;
@@ -176,6 +204,12 @@ class OtXmlParameters
 		}
 		if ($this->getVendorId()) {
 			$xmlData[] = '<VendorId>' . $this->getVendorId() . '</VendorId>';
+		}
+		if ($this->getMinVendorRating()) {
+			$xmlData[] = '<MinVendorRating>' . $this->getVendorId() . '</MinVendorRating>';
+		}
+		if ($this->getMaxVendorRating()) {
+			$xmlData[] = '<MaxVendorRating>' . $this->getVendorId() . '</MaxVendorRating>';
 		}
 		if ($this->getItemTitle()) {
 			$xmlData[] = '<ItemTitle>' . $this->getItemTitle() . '</ItemTitle>';
