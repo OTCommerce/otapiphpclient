@@ -32,10 +32,10 @@ class OtApi
 	 * @param OtParameters|null    $params
 	 * @param OtXmlParameters|null $xmlParams
 	 * @param bool                 $returnAsStream
-	 * @return resource|string
+	 * @return string
 	 * @throws OtException
 	 */
-	public static function request(string $method, OtParameters $params = NULL, ?OtXmlParameters $xmlParams = NULL, bool $returnAsStream = FALSE)
+	public static function request(string $method, OtParameters $params = NULL, ?OtXmlParameters $xmlParams = NULL, bool $returnAsStream = FALSE): string
 	{
 		$requestUrl = self::prepareRequest($method, $params, $xmlParams);
 		try {

@@ -11,13 +11,16 @@
             "email": "am@opentao.net"
         }
     ],
-    "version": "1.1.4",
+    "version": "1.1.5",
     "require": {
         "php": ">=7.4",
         "guzzlehttp/guzzle": "^7.0.1",
         "nesbot/carbon": "^2",
         "halaxa/json-machine": "^0.7",
         "ext-json": "*"
+    },
+    "require-dev": {
+        "roave/security-advisories": "dev-latest"
     },
     "autoload": {
         "psr-4": {

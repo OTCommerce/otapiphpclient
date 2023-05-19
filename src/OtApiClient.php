@@ -48,6 +48,18 @@ class OtApiClient
 	}
 
 	/**
+	 * @param string $itemId
+	 * @return string|NULL
+	 * @throws OtException
+	 */
+	public function getDescription(string $itemId): ?string
+	{
+		$params = new OtParameters();
+		$params->setItemId($itemId);
+		return Otapi::request('GetItemDescription', $params);
+	}
+
+	/**
 	 * @param OtParameters    $parameters
 	 * @param OtXmlParameters $xmlParameters
 	 * @return string|null
