@@ -2,8 +2,10 @@
 
 namespace OtApiClient;
 
+use http\Params;
 use OtApiClient\ValuesObject\OtParameters;
-use OtApiClient\ValuesObject\OtXmlParameters;
+use OtApiClient\ValuesObject\OtXmlItemParameters;
+use OtApiClient\ValuesObject\OtXmlSearchParameters;
 
 /**
  * Class OtApiClient
@@ -60,12 +62,44 @@ class OtApiClient
 	}
 
 	/**
-	 * @param OtParameters    $parameters
-	 * @param OtXmlParameters $xmlParameters
+	 * @param string $itemReviewId
+	 * @return string|NULL
+	 * @throws OtException
+	 */
+	public function getItemReview(string $itemReviewId): ?string
+	{
+		$params = new OtParameters();
+		$params->setItemReviewId($itemReviewId);
+		return Otapi::request('GetItemReview', $params);
+	}
+
+	/**
+	 * @param string       $itemId
+	 * @param OtParameters $params
+	 * @param bool         $internal
+	 * @return string|NULL
+	 * @throws OtException
+	 */
+	public function searchItemReviews(string $itemId, OtParameters $params, bool $internal = FALSE): ?string
+	{
+		$xmlParameters = new OtXmlSearchParameters();
+		$xmlParameters->setItemId($itemId);
+		if ($internal){
+			$xmlParameters->setSource('Internal');
+		}
+		else{
+			$xmlParameters->setSource('Provider');
+		}
+		return Otapi::request('SearchItemReviews', $params, $xmlParameters);
+	}
+
+	/**
+	 * @param OtParameters        $parameters
+	 * @param OtXmlItemParameters $xmlParameters
 	 * @return string|null
 	 * @throws OtException
 	 */
-	public function batchSearchItemsFrame(OtParameters $parameters, OtXmlParameters $xmlParameters): ?string
+	public function batchSearchItemsFrame(OtParameters $parameters, OtXmlItemParameters $xmlParameters): ?string
 	{
 		return Otapi::request('BatchSearchItemsFrame', $parameters, $xmlParameters);
 	}

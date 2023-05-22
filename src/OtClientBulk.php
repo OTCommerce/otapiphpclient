@@ -5,7 +5,7 @@ namespace OtApiClient;
 use JsonMachine\JsonMachine;
 use JsonException;
 use OtApiClient\ValuesObject\OtParameters;
-use OtApiClient\ValuesObject\OtXmlParameters;
+use OtApiClient\ValuesObject\OtXmlItemParameters;
 
 /**
  * Class OtClientBulk
@@ -64,12 +64,12 @@ class OtClientBulk extends OtApiClient
 	}
 
 	/**
-	 * @param OtParameters    $parameters
-	 * @param OtXmlParameters $xmlParameters
+	 * @param OtParameters        $parameters
+	 * @param OtXmlItemParameters $xmlParameters
 	 * @return string|null
 	 * @throws OtException
 	 */
-	public function runBulkSearchItems(OtParameters $parameters, OtXmlParameters $xmlParameters): ?string
+	public function runBulkSearchItems(OtParameters $parameters, OtXmlItemParameters $xmlParameters): ?string
 	{
 		$data = Otapi::request('RunBulkSearchItems', $parameters, $xmlParameters);
 		if ($data) {
@@ -87,13 +87,13 @@ class OtClientBulk extends OtApiClient
 	}
 
 	/**
-	 * @param OtParameters    $parameters
-	 * @param OtXmlParameters $xmlParameters
-	 * @param bool            $asStream
+	 * @param OtParameters        $parameters
+	 * @param OtXmlItemParameters $xmlParameters
+	 * @param bool                $asStream
 	 * @return string|NULL
 	 * @throws OtException
 	 */
-	public function getBulkSearch(OtParameters $parameters, OtXmlParameters $xmlParameters, bool $asStream = FALSE): ?string
+	public function getBulkSearch(OtParameters $parameters, OtXmlItemParameters $xmlParameters, bool $asStream = FALSE): ?string
 	{
 		$data = $this->runBulkSearchItems($parameters, $xmlParameters);
 		if ($data) {
@@ -123,13 +123,13 @@ class OtClientBulk extends OtApiClient
 	}
 
 	/**
-	 * @param int             $frameSize
-	 * @param OtXmlParameters $xmlParameters
-	 * @param bool            $asSteam
+	 * @param int                 $frameSize
+	 * @param OtXmlItemParameters $xmlParameters
+	 * @param bool                $asSteam
 	 * @return JsonMachine
 	 * @throws OtException
 	 */
-	public function getBulkSearchDecoded(int $frameSize, OtXmlParameters $xmlParameters, bool $asSteam = FALSE): JsonMachine
+	public function getBulkSearchDecoded(int $frameSize, OtXmlItemParameters $xmlParameters, bool $asSteam = FALSE): JsonMachine
 	{
 		$parameters = new OtParameters();
 		$parameters->setFrameSize($frameSize);

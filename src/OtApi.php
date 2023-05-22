@@ -8,6 +8,7 @@ use GuzzleHttp\Exception\GuzzleException;
 use GuzzleHttp\Psr7\StreamWrapper;
 use JsonException;
 use OtApiClient\ValuesObject\OtParameters;
+use OtApiClient\ValuesObject\OtXmlItemParameters;
 use OtApiClient\ValuesObject\OtXmlParameters;
 
 /**
@@ -29,8 +30,8 @@ class OtApi
 
 	/**
 	 * @param string               $method
-	 * @param OtParameters|null    $params
-	 * @param OtXmlParameters|null $xmlParams
+	 * @param OtParameters|NULL    $params
+	 * @param OtXmlParameters|NULL $xmlParams
 	 * @param bool                 $returnAsStream
 	 * @return string
 	 * @throws OtException
@@ -61,16 +62,16 @@ class OtApi
 
 	/**
 	 * @param string               $method
-	 * @param OtParameters|null    $parameters
-	 * @param OtXmlParameters|null $xmlParams
-	 * @return array|null
+	 * @param OtParameters|NULL    $parameters
+	 * @param OtXmlParameters|NULL $xmlParams
+	 * @return array|NULL
 	 */
 	private static function prepareRequest(string $method, ?OtParameters $parameters = NULL, ?OtXmlParameters $xmlParams = NULL): string
 	{
 		$params = $parameters ? $parameters->getData() : [];
 		self::createClient();
 		if ($xmlParams !== NULL) {
-			$params['xmlParameters'] = $xmlParams->createXmlParameters();
+			$params[$xmlParams->getParamName()] = $xmlParams->createXmlParameters();
 		}
 		$params['instanceKey'] = self::getKey();
 		$params['language']    = self::getLang();

@@ -4,12 +4,12 @@ use App\Conf;
 use JsonMachine\JsonMachine;
 use OtApiClient\OtClientBulk;
 use OtApiClient\ValuesObject\OtParameters;
-use OtApiClient\ValuesObject\OtXmlParameters;
+use OtApiClient\ValuesObject\OtXmlItemParameters;
 
 include_once __DIR__ . "/ini.php";
 try {
 	$client        = new OtClientBulk(Conf::getConfigValue('OT_Key', ''), Conf::getConfigValue('OT_Secret', ''), Conf::getConfigValue('OT_Lang', ''));
-	$xmlParameters = new OtXmlParameters();
+	$xmlParameters = new OtXmlItemParameters();
 	$xmlParameters->setCategoryId('otc-46');
 	$xmlParameters->setMinVolume(30);
 	$parameters = new OtParameters();

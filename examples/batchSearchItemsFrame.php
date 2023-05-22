@@ -6,7 +6,7 @@ use OtApiClient\ValuesObject\OtBlockList;
 use OtApiClient\ValuesObject\OtOrderType;
 use OtApiClient\ValuesObject\OtParameters;
 use OtApiClient\ValuesObject\OtProvider;
-use OtApiClient\ValuesObject\OtXmlParameters;
+use OtApiClient\ValuesObject\OtXmlItemParameters;
 
 include_once __DIR__ . "/ini.php";
 try {
@@ -17,7 +17,7 @@ try {
 	$blockList = new OtBlockList();
 	$blockList->setBrand(TRUE);
 	$parameters->setBlockList($blockList);
-	$xmlParameters = new OtXmlParameters();
+	$xmlParameters = new OtXmlItemParameters();
 	//$xmlParameters->setCategoryId('otc-46');
 	$xmlParameters->setProvider(OtProvider::Alibaba1688);
 	$xmlParameters->setItemTitle('adidas');

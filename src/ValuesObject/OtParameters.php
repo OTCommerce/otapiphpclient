@@ -8,20 +8,22 @@ namespace OtApiClient\ValuesObject;
  */
 class OtParameters
 {
-	/*** @var int|null */
+	/*** @var int|NULL */
 	private ?int $framePosition = NULL;
-	/*** @var int|null */
+	/*** @var int|NULL */
 	private ?int $frameSize = NULL;
-	/*** @var string|null */
+	/*** @var string|NULL */
 	private ?string $activityId = NULL;
-	/*** @var bool|null */
+	/*** @var bool|NULL */
 	private ?bool $getResult = NULL;
-	/*** @var string|null */
+	/*** @var string|NULL */
 	private ?string $ids = NULL;
-	/*** @var OtBlockList|null */
+	/*** @var OtBlockList|NULL */
 	private ?OtBlockList $blockList = NULL;
-	/*** @var string|null */
+	/*** @var string|NULL */
 	private ?string $itemId = NULL;
+	/*** @var string|NULL */
+	private ?string $itemReviewId = NULL;
 
 	/*** @return int|null */
 	public function getFramePosition(): ?int
@@ -95,7 +97,7 @@ class OtParameters
 		$this->blockList = $blockList;
 	}
 
-	/*** @return string|null */
+	/*** @return string|NULL */
 	public function getItemId(): ?string
 	{
 		return $this->itemId;
@@ -105,6 +107,18 @@ class OtParameters
 	public function setItemId(string $itemId): void
 	{
 		$this->itemId = $itemId;
+	}
+
+	/*** @return string|NULL */
+	public function getItemReviewId(): ?string
+	{
+		return $this->itemReviewId;
+	}
+
+	/*** @param string|NULL $itemReviewId */
+	public function setItemReviewId(?string $itemReviewId): void
+	{
+		$this->itemReviewId = $itemReviewId;
 	}
 
 	/*** @return array */
