@@ -38,6 +38,19 @@ class OtApiClient
 	}
 
 	/**
+	 * @param string $provider
+	 * @return string|NULL
+	 * @throws OtException
+	 */
+	public function getProviderBriefCatalog(string $provider): ?string
+	{
+		$params = new OtParameters();
+		$params->setProviderType($provider);
+		return Otapi::request('GetProviderBriefCatalog', $params);
+	}
+
+
+	/**
 	 * @param string $itemId
 	 * @return string|null
 	 * @throws OtException

@@ -24,6 +24,8 @@ class OtParameters
 	private ?string $itemId = NULL;
 	/*** @var string|NULL */
 	private ?string $itemReviewId = NULL;
+	/*** @var string|NULL */
+	private ?string $providerType = NULL;
 
 	/*** @return int|null */
 	public function getFramePosition(): ?int
@@ -119,6 +121,18 @@ class OtParameters
 	public function setItemReviewId(?string $itemReviewId): void
 	{
 		$this->itemReviewId = $itemReviewId;
+	}
+
+	/*** @return string|NULL */
+	public function getProviderType(): ?string
+	{
+		return $this->providerType;
+	}
+
+	/*** @param string|NULL $providerType */
+	public function setProviderType(?string $providerType): void
+	{
+		$this->providerType = $providerType;
 	}
 
 	/*** @return array */
