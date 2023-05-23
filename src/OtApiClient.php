@@ -38,6 +38,17 @@ class OtApiClient
 	}
 
 	/**
+	 * @return string|NULL
+	 * @throws OtException
+	 */
+	public function getProviderInfoList(): ?string
+	{
+		$params = new OtParameters();
+		return Otapi::request('GetProviderInfoList', $params);
+	}
+
+
+	/**
 	 * @param string $provider
 	 * @return string|NULL
 	 * @throws OtException
